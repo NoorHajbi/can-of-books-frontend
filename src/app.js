@@ -30,12 +30,14 @@ class App extends React.Component {
                     <MyFavoriteBooks /> : <Login />
                 }
               </Route>
-              {/* TODO: add a route with a path of '/profile' that renders a
+              <Route exact path="/profile">
+                {/* TODO: add a route with a path of '/profile' that renders a
                  `Profile` component */}
-              {
-                this.props.auth0.isAuthenticated &&
-                <Profile />
-              }
+                {
+                  this.props.auth0.isAuthenticated &&
+                  <Profile />
+                }
+              </Route>
             </Switch>
             <Footer />
         </Router>
