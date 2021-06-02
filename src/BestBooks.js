@@ -2,64 +2,146 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { withAuth0 } from "@auth0/auth0-react";
-import Carousel from 'react-bootstrap/Carousel'
+import Jumbotron from 'react-bootstrap/Jumbotron';
+import Card from 'react-bootstrap/Card';
+import BookFormModal from './BookFormModal';
 
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       books: [],
-      show: false,
+      showBestBooksComponent: false,
       server: process.env.REACT_APP_MONGO_SERVER,
+
+
+      showFormModal: false,
+      email: '',
+      bookName: '',
+      bookDescription: '',
+      bookStatus: ''
     }
+  }
+
+
+
+  updateBookName = (e) => this.setState({ bookName: e.target.value });
+  updateBookDescription = (e) => this.setState({ bookDescription: e.target.value });
+  updatebookStatus = (e) => this.setState({ bookStatus: e.target.value });
+
+  getNewBook = async () => {
+    const { user } = this.props.auth0;
+    try {
+      const bodyData = {
+        email: user.email,
+        bookName: this.state.bookName,
+        bookDescription: this.state.bookDescription,
+        bookStatus: this.state.bookStatus
+      }
+      const books = await axios.post(`${this.state.server}/books`, bodyData);
+      console.log(books.data);
+      this.setState({
+        books: books.data
+      });
+      this.state.closeForm();
+
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+  deleteBook = async (index) => {
+    // console.log(index);
+    const { user } = this.props.auth0;
+    const newArrayOfBooks = this.state.books.filter((books, idx) => {
+      return idx !== index;
+    });
+
+    console.log(newArrayOfBooks);
+    this.setState({
+      books: newArrayOfBooks
+    });
+
+    const query = {
+      email: user.email
+    }
+
+    await axios.delete(`${this.state.server}/books/${index}`, { params: query });
+
   }
   componentDidMount = async () => {
     try {
-      let serverURL = await axios.get(`${this.state.server}?email=${this.props.auth0.user.email}`);
+      let serverURL = await axios.get(`${this.state.server}/books?email=${this.props.auth0.user.email}`);
       console.log(serverURL);
       console.log(serverURL.data[0].books)
       this.setState({
         books: serverURL.data[0].books,
-        show: true
+        showBestBooksComponent: true
       });
     } catch (error) {
       console.log(error);
     }
   }
+  showForm = () => {
+    this.setState({
+      showFormModal: true,
+    });
+
+  }
+
+  closeForm = () => {
+    this.setState({
+      showFormModal: false,
+    });
+  }
+
 
   render() {
+    console.log(this.state.books);
     return (
       <>
-        {this.state.show &&
 
-          <>
-            <Carousel style={{ width: '18rem' }} >
-              {this.state.books.map((data, idx) => {
+        {/* <Jumbotron> */}
+
+          <button onClick={this.showForm}>Add Books</button>
+          {this.state.showFormModal &&
+            <>
+              <BookFormModal
+                getBookName={this.updateBookName}
+                getBookDescription={this.updateBookDescription}
+                getBookStatus={this.updatebookStatus}
+                ShowForm={this.state.showFormModal}
+                closeForm={this.closeForm}
+                getNewBook={this.getNewBook}
+
+              />
+            </>
+          }
+
+          {this.state.showBestBooksComponent &&
+            <>
+
+              {this.state.books.map((data, index) => {
                 return (
-                  <Carousel.Item interval={1000} key={idx}>
-                    <img
-                      className="d-block w-100"
-                      src={this.props.auth0.user.picture}
-                      alt="Second slide"
-                      height='80%'
-                    />
-                    <Carousel.Caption>
-                      <h1>Name: {data.name} </h1>
-                      {console.log(data.name)}
-                      <p>Description: {data.description}</p>
-                      {console.log(data.description)}
-                      <p>Status: {data.status} </p>
-                      {console.log(data.status)}
-                    </Carousel.Caption>
-                  </Carousel.Item>
-                )
+                  <>
+                    <Card style={{ width: '18rem' }} key={index}>
+                      <Card.Body>
+                        <Card.Title>Name: {data.name}</Card.Title>
+                        <Card.Text>Description: {data.description}</Card.Text>
+                        <Card.Text>Status: {data.status}</Card.Text>
+                        <button onClick={() => { this.deleteBook(index) }}>Delete</button>
+                      </Card.Body>
+                    </Card>
+
+
+                  </>
+                );
+
               })
               }
-            </Carousel>
-          </>
-
-        }
-
+            </>
+          }
+        {/* </Jumbotron> */}
       </>
     )
   }
