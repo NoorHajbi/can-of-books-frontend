@@ -33,27 +33,34 @@ class BestBooks extends React.Component {
         {this.state.show &&
 
           <>
-            <Carousel>
+            <Carousel style={{ width: '18rem' }} >
               {this.state.books.map((data, idx) => {
                 return (
-                  <Carousel.Item style={{ width: '18rem'}} key={idx}>
-                    <Carousel.Caption style={{ color: 'black'}}>
+                  <Carousel.Item interval={1000} key={idx}>
+                    <img
+                      className="d-block w-100"
+                      src={this.props.auth0.user.picture}
+                      alt="Second slide"
+                      height='80%'
+                    />
+                    <Carousel.Caption>
                       <h1>Name: {data.name} </h1>
                       {console.log(data.name)}
                       <p>Description: {data.description}</p>
                       {console.log(data.description)}
                       <p>Status: {data.status} </p>
-                        {console.log(data.status)}
+                      {console.log(data.status)}
                     </Carousel.Caption>
                   </Carousel.Item>
                 )
               })
               }
             </Carousel>
+          </>
 
-          </>
         }
-          </>
+
+      </>
     )
   }
 }
