@@ -25,7 +25,7 @@ React, JavaScript
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 [Class11 Link](https://github.com/LTUC/amman-301d20-react/tree/master/class-11)
 
-Lab 11: 
+Lab 12: 
 
 Name of feature:  Set up your repositories And Authentication
 
@@ -33,6 +33,6 @@ Estimate of time needed to complete: 2 hours
 
 Start time: 2:00pm
 
-Finish time: 3:30 pm
+Finish time: 3:30 am
 
-Actual time needed to complete: 1 hour and half
+Actual time needed to complete: 10
