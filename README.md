@@ -27,7 +27,7 @@ React, JavaScript
 
 Lab 12: 
 
-Name of feature:  Set up your repositories And Authentication
+Name of feature:  Storage and Book Component
 
 Estimate of time needed to complete: 2 hours
 
