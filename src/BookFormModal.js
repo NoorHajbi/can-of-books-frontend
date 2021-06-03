@@ -5,9 +5,9 @@ class BookFormModal extends Component {
     render() {
         return (
             <div>
-                <Modal show={this.props.ShowForm} onHide={this.props.closeForm} animation={false}>
+                <Modal show={this.props.ShowForm} onHide={this.props.closeForm} animation={true}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Modal heading</Modal.Title>
+                        <Modal.Title>Add Modal</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <form>
@@ -21,7 +21,7 @@ class BookFormModal extends Component {
                             <input type="text" onChange={(e) => { this.props.getBookStatus(e) }} />
                             <br />
                             {/* <button type="submit" onClick={this.props.getNewBook}>Add</button> */}
-                            {/* <button onClick={this.props.closeForm}>Close Form</button> */}
+                            {/* <button onClick={this.props.updateForm(idx)}>update Form</button> */}
                         </form>
                     </Modal.Body>
 

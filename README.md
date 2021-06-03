@@ -25,14 +25,14 @@ React, JavaScript
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 [Class11 Link](https://github.com/LTUC/amman-301d20-react/tree/master/class-11)
 
-Lab 12: 
+Lab 14: 
 
-Name of feature:  Storage and Book Component
+Name of feature:  update books
 
 Estimate of time needed to complete: 2 hours
 
-Start time: 2:00pm
+Start time: 4:00pm
 
-Finish time: 3:30 am
+Finish time: 8:00 am
 
-Actual time needed to complete: 10
+Actual time needed to complete: 5 hours

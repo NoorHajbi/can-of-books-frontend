@@ -5,6 +5,7 @@ import { withAuth0 } from "@auth0/auth0-react";
 import Jumbotron from 'react-bootstrap/Jumbotron';
 import Card from 'react-bootstrap/Card';
 import BookFormModal from './BookFormModal';
+import UpdateForm from './UpdateForm';
 
 class BestBooks extends React.Component {
   constructor(props) {
@@ -13,13 +14,14 @@ class BestBooks extends React.Component {
       books: [],
       showBestBooksComponent: false,
       server: process.env.REACT_APP_MONGO_SERVER,
-
-
       showFormModal: false,
       email: '',
       bookName: '',
       bookDescription: '',
-      bookStatus: ''
+      bookStatus: '',
+
+      showUpdateStatus: false,
+      index: 0
     }
   }
 
@@ -43,7 +45,9 @@ class BestBooks extends React.Component {
       this.setState({
         books: books.data
       });
-      this.state.closeForm();
+      this.setState({
+        showFormModal: false,
+      });
 
     } catch (error) {
       console.log(error);
@@ -67,8 +71,46 @@ class BestBooks extends React.Component {
     }
 
     await axios.delete(`${this.state.server}/books/${index}`, { params: query });
-
   }
+
+  updateBook = async (e) => {
+    e.preventDefault();
+    const { user } = this.props.auth0;
+    const bodyData = {
+      email: user.email,
+      bookName: this.state.bookName,
+      bookDescription: this.state.bookDescription,
+      bookStatus: this.state.bookStatus
+    }
+    let updatedBooks = await axios.put(`${this.state.server}/books/${this.state.index}`, bodyData);
+    this.setState({
+      books: updatedBooks.data
+    })
+  }
+  //here
+  showUpdateForm = (idx) => { //up11
+
+    const selectedBooks = this.state.books.filter((val, index) => {
+      return idx === index;
+    })
+
+    console.log(selectedBooks);
+
+    this.setState({
+      showUpdateStatus: true,
+      index: idx,
+      bookName: selectedBooks[0].name,
+      bookDescription: selectedBooks[0].description,
+      bookStatus: selectedBooks[0].status
+
+    })
+  }
+  /*************************/
+
+
+  /***********************/
+
+
   componentDidMount = async () => {
     try {
       let serverURL = await axios.get(`${this.state.server}/books?email=${this.props.auth0.user.email}`);
@@ -89,9 +131,10 @@ class BestBooks extends React.Component {
 
   }
 
-  closeForm = () => {
+  closeForm = () => { //call it with update
     this.setState({
       showFormModal: false,
+      showUpdateStatus: false
     });
   }
 
@@ -103,44 +146,58 @@ class BestBooks extends React.Component {
 
         {/* <Jumbotron> */}
 
-          <button onClick={this.showForm}>Add Books</button>
-          {this.state.showFormModal &&
-            <>
-              <BookFormModal
-                getBookName={this.updateBookName}
-                getBookDescription={this.updateBookDescription}
-                getBookStatus={this.updatebookStatus}
-                ShowForm={this.state.showFormModal}
-                closeForm={this.closeForm}
-                getNewBook={this.getNewBook}
+        <button onClick={this.showForm}>Add Books</button>
+        {this.state.showFormModal &&
+          <>
+            <BookFormModal
+              getBookName={this.updateBookName}
+              getBookDescription={this.updateBookDescription}
+              getBookStatus={this.updatebookStatus}
+              ShowForm={this.state.showFormModal}
+              closeForm={this.closeForm}
+              getNewBook={this.getNewBook}
+            />
+          </>
+        }
+        {this.state.showUpdateStatus &&
+          <UpdateForm
+            bookName={this.state.bookName}
+            bookDescription={this.state.bookDescription}
+            bookStatus={this.state.bookStatus}
+            getBookName={this.updateBookName}
+            getBookDescription={this.updateBookDescription}
+            getBookStatus={this.updatebookStatus}
+            updateBook={this.updateBook}
+            closeForm={this.closeForm}
+            ShowForm={this.state.showUpdateStatus}
+          />
+        }
 
-              />
-            </>
-          }
+        {this.state.showBestBooksComponent &&
+          <>
 
-          {this.state.showBestBooksComponent &&
-            <>
+            {this.state.books.map((data, index) => {
+              return (
+                <>
+                  <Card style={{ width: '18rem' }} key={index}>
+                    <Card.Body>
+                      <Card.Title>Name: {data.name}</Card.Title>
+                      <Card.Text>Description: {data.description}</Card.Text>
+                      <Card.Text>Status: {data.status}</Card.Text>
+                      <button onClick={() => { this.deleteBook(index) }}>Delete</button>
+                      <button onClick={() => { this.showUpdateForm(index) }}>Update</button>
 
-              {this.state.books.map((data, index) => {
-                return (
-                  <>
-                    <Card style={{ width: '18rem' }} key={index}>
-                      <Card.Body>
-                        <Card.Title>Name: {data.name}</Card.Title>
-                        <Card.Text>Description: {data.description}</Card.Text>
-                        <Card.Text>Status: {data.status}</Card.Text>
-                        <button onClick={() => { this.deleteBook(index) }}>Delete</button>
-                      </Card.Body>
-                    </Card>
+                    </Card.Body>
+                  </Card>
 
 
-                  </>
-                );
+                </>
+              );
 
-              })
-              }
-            </>
-          }
+            })
+            }
+          </>
+        }
         {/* </Jumbotron> */}
       </>
     )
